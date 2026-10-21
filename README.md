@@ -1,4 +1,4 @@
-# canine-rnaseq-benchmark
+# Canine RNA-seq Differential-Expression Benchmark
 Benchmarking DESeq2, edgeR, and limma-voom using simulated and canine lymphoma RNA-seq data.
 
 ## Project goal
@@ -30,6 +30,16 @@ BiocManager::install(
   c("DESeq2", "edgeR", "limma", "compcodeR")
 )
 ```
+Tested environment:
+
+- R 4.5.2
+- DESeq2 1.50.2
+- edgeR 4.8.2
+- limma 3.66.0
+- compcodeR 1.46.0
+
+All four packages loaded successfully during the diagnostic test.
+
 Package installation and version information will be tested and documented as development continues.
 
 ## How to run the current script
@@ -66,7 +76,7 @@ The script currently prints the sample-information table and diagnostic results 
 - Selected compcodeR for simulation.
 - Downloaded the GSE196186 count matrix.
 - Created and tested a basic R data-inspection script.
-- Package testing is still in progress.
+- Recorded R and package versions and added a package-diagnostics script.
 
 ## Planned work
 
