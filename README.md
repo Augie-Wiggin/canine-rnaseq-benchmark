@@ -125,7 +125,7 @@ source("01_inspect_data.R")
 ```
 This script reads the count matrix and selects the 14 samples used in the study. It then creates a table describing each sample’s group and checks whether the data have the expected dimensions, missing values, negative counts, non-integer counts, or mismatched sample names. The results are printed in the R console.
 
-### 02_package_diagnostics.R
+### `02_package_diagnostics.R`
 
 Run the package diagnostic script with:
 
@@ -134,7 +134,7 @@ source("02_package_diagnostics.R")
 ```
 This script prints the R version used for the project. It then loads DESeq2, edgeR, limma, and compcodeR and prints the installed version of each package. A successful run confirms that the required packages are installed and available in the current R environment.
 
-### 03_test_de_methods.R
+### `03_test_de_methods.R`
 
 Run the preliminary differential-expression test with:
 
