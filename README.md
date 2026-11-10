@@ -125,7 +125,6 @@ This script prints the R version used for the project. It then loads DESeq2, edg
 ### `03_test_de_methods.R`
 
 Run the preliminary differential-expression test with:
-
 ```r
 source("03_test_de_methods.R")
 ```
@@ -145,6 +144,18 @@ The main output columns are summarized below:
 
 In the current scripts, all three methods use the Benjamini-Hochberg adjustment by default. The adjusted values account for testing many genes at the same time. Genes with an adjusted value below 0.05 will generally be considered statistically significant.
 
+### `04_simulate_compcodeR.R`
+
+Run the pilot simulation with:
+```r
+source("04_simulate_compcodeR.R")
+```
+This script uses compcodeR to create one simulated RNA-seq dataset with seven samples in each group and 100 known differentially expressed genes. The script saves the simulated dataset as:
+```text
+data/compcodeR_pilot_n7_repl1.rds
+```
+It then checks the count matrix, sample groups, number of known DE genes, and validity of the simulated data object. A diagnostic report is also created for the pilot simulation.
+
 ## Current progress
 
 - Created and organized the GitHub repository.
@@ -152,6 +163,7 @@ In the current scripts, all three methods use the Benjamini-Hochberg adjustment 
 - Created and tested scripts for inspecting data and checking packages.
 - Recorded the R and package versions.
 - Created and tested a small script that runs all three methods on synthetic data.
+- Created and validated a compcodeR pilot simulation with known differentially expressed genes.
 
 ## Planned work
 
@@ -168,5 +180,6 @@ In the current scripts, all three methods use the Benjamini-Hochberg adjustment 
 - [edgeR User's Guide](https://bioconductor.org/packages/release/bioc/vignettes/edgeR/inst/doc/edgeRUsersGuide.pdf)
 - [limma User's Guide](https://bioconductor.org/packages/release/bioc/vignettes/limma/inst/doc/usersguide.pdf)
 - [compcodeR Bioconductor package](https://bioconductor.org/packages/release/bioc/html/compcodeR.html)
+- [compcodeR Bioconductor vignette](https://www.bioconductor.org/packages/release/bioc/vignettes/compcodeR/inst/doc/compcodeR.html)
 - [GEO GSE196186 dataset](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE196186)
 - [Sheet et al. (2022) canine lymphoma study](https://pubmed.ncbi.nlm.nih.gov/35835403/)
