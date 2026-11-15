@@ -103,16 +103,18 @@ limma_results <- topTable(
 # Display the 10 highest-ranked genes.
 head(limma_results, 10)
 
-# Create the results folder if it does not already exist.
-if (!dir.exists("results")) {dir.create("results")}
+# Create the pilot-results folder if needed.
+if (!dir.exists("results/pilot")) {
+  dir.create("results/pilot", recursive = TRUE)
+}
 
 # Save the complete result tables as CSV files.
 
 write.csv(as.data.frame(deseq2_results),
-  "results/deseq2_pilot_results.csv")
+  "results/pilot/deseq2_pilot_results.csv")
 
 write.csv(edger_results,
-  "results/edger_pilot_results.csv")
+  "results/pilot/edger_pilot_results.csv")
 
 write.csv(limma_results,
-  "results/limma_voom_pilot_results.csv")
+  "results/pilot/limma_voom_pilot_results.csv")
