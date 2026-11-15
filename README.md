@@ -98,7 +98,7 @@ data/GSE196186_Raw_gene_counts_matrix.tsv
 
 ## How to run the scripts
 
-Open `canine-rnaseq-benchmark.Rproj` in RStudio. Opening the project helps R use the correct project folder when reading files. The current scripts are stored in the main repository folder.
+Opening the project helps R use the correct project folder when reading files. The current scripts are stored in the main repository folder.
 
 In RStudio, run each script from the project directory using the `source()` command. The `source()` function reads the script and runs its code.
 
@@ -132,7 +132,7 @@ This script creates a small synthetic RNA-seq count matrix with 100 genes and 8 
 
 The script then gives the same count matrix to DESeq2, edgeR, and limma-voom. Each method produces a result table and prints its 10 highest-ranked genes. The first 10 genes should generally rank highly, although other genes may also appear because the dataset contains random variation.
 
-#### Expected results for `03_test_de_methods.R`
+#### Expected results for `03_test_de_methods.R`:
 
 The main output columns are summarized below:
 
@@ -156,6 +156,53 @@ data/compcodeR_pilot_n7_repl1.rds
 ```
 It then checks the count matrix, sample groups, number of known DE genes, and validity of the simulated data object. A diagnostic report is also created for the pilot simulation.
 
+### `05_run_methods_on_pilot.R`
+
+Run the three differential-expression methods on the saved compcodeR pilot dataset:
+```r
+source("05_run_methods_on_pilot.R")
+```
+This script reads the pilot dataset created by 04_simulate_compcodeR.R. It gives the same count matrix and sample information to DESeq2, edgeR, and limma-voom.
+
+The script prints the 10 highest-ranked genes from each method and saves the complete result tables in the pilot results folder:
+
+```text
+results/pilot/deseq2_pilot_results.csv
+results/pilot/edger_pilot_results.csv
+results/pilot/limma_voom_pilot_results.csv
+```
+The methods may rank genes differently because they use different statistical models. However, the results can be compared because all three methods analyze the same simulated dataset and the same sample groups.
+
+### `06_calculate_pilot_metrics.R`
+Calculate pilot performance metrics with:
+```r
+source("06_calculate_pilot_metrics.R")
+```
+This script reads the three complete result tables and the known DE-gene labels stored by compcodeR. It uses an adjusted p-value cutoff of 0.05 to identify the genes called significant by each method.
+
+The script compares each method's results with the known compcodeR truth:
+
+| Result category | What it means |
+|---|---|
+| True positive | The method called a gene significant, and the gene is truly DE. |
+| False positive | The method called a gene significant, but the gene is not truly DE. |
+| False negative | The gene is truly DE, but the method did not call it significant. |
+| True negative | The gene is not truly DE, and the method did not call it significant. |
+
+The script then calculates the following performance measures:
+
+| Measure | Formula | What it shows |
+|---|---|---|
+| Precision | `true positives / (true positives + false positives)` | How many genes called significant were truly DE. |
+| Recall | `true positives / (true positives + false negatives)` | How many of the known DE genes were found. |
+| Observed false discovery rate | `false positives / (true positives + false positives)` | The proportion of significant calls that were false positives. |
+
+The combined pilot metrics are saved as:
+```text
+results/pilot/pilot_metrics.csv
+```
+The pilot metrics are an initial workflow check. The main benchmark will repeat this process across the planned simulated datasets and compare method performance across multiple replicates.
+
 ## Current progress
 
 - Created and organized the GitHub repository.
@@ -164,6 +211,8 @@ It then checks the count matrix, sample groups, number of known DE genes, and va
 - Recorded the R and package versions.
 - Created and tested a small script that runs all three methods on synthetic data.
 - Created and validated a compcodeR pilot simulation with known differentially expressed genes.
+- Ran DESeq2, edgeR, and limma-voom on the compcodeR pilot dataset.
+- Calculated pilot precision, recall, and observed false discovery rate for all three methods.
 
 ## Planned work
 
