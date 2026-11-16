@@ -1,7 +1,8 @@
-# Run one benchmark simulation from beginning to end.
-# This script follows the same steps as scripts 04, 05, and 06:
-# simulate data, run the three methods, and calculate performance metrics.
-# This first dataset is a development check, not the completed benchmark.
+# Run a two-dataset development check for the accuracy benchmark.
+# For each dataset, this script simulates data and runs the three methods,
+# comparing their results with compcodeR's known DE genes.
+# The settings below use two datasets with 7 samples per group.
+# The full accuracy benchmark will use 20 datasets.
 
 # Load compcodeR for simulation.
 library(compcodeR)
@@ -13,37 +14,51 @@ library(limma)
 
 # Create folders for the benchmark data and results if needed.
 if (!dir.exists("data/simulation")) {
-  dir.create("data/simulation", recursive = TRUE)
-}
+  dir.create("data/simulation", recursive = TRUE)}
 
 if (!dir.exists("results/simulation")) {
-  dir.create("results/simulation", recursive = TRUE)
-}
+  dir.create("results/simulation", recursive = TRUE)}
+
+# Settings for the two-dataset check.
+benchmark_settings <- data.frame(
+  samples_per_group = c(7, 7),
+  replicate = c(1, 2))
+
+# Start an empty table to collect metrics from each dataset.
+benchmark_metrics <- data.frame()
+
+# Repeat the workflow for each row in the settings table.
+for (i in 1:nrow(benchmark_settings)) {
+  samples_per_group <- benchmark_settings$samples_per_group[i]
+  replicate_id <- benchmark_settings$replicate[i]
 
 # --------------------------------
 # Simulate one benchmark dataset
 # --------------------------------
 
-# This dataset has 7 samples in each group and is replicate 1.
-dataset_name <- "simulation_n7_repl1"
+# Create a name from the sample size and replicate number.
+dataset_name <- paste0(
+  "simulation_n", samples_per_group,
+  "_repl", replicate_id)
 
-# Set a random seed so this dataset can be recreated later.
-set.seed(7001)
+# Set a different, reproducible seed for each dataset.
+set.seed(samples_per_group * 1000 + replicate_id)
 
 # Generate a dataset with 1,000 genes and 100 known DE genes.
 simulation_data <- generateSyntheticData(
   dataset = dataset_name,
   n.vars = 1000,
-  samples.per.cond = 7,
+  samples.per.cond = samples_per_group,
   n.diffexp = 100,
-  repl.id = 1,
+  repl.id = replicate_id,
   seqdepth = 1e7,
   fraction.upregulated = 0.5,
   between.group.diffdisp = FALSE,
   filter.threshold.total = 1,
   filter.threshold.mediancpm = 0,
   fraction.non.overdispersed = 0,
-  output.file = "data/simulation/simulation_n7_repl1.rds")
+  output.file = paste0(
+    "data/simulation/", dataset_name, ".rds"))
 
 # Check whether compcodeR considers the simulated data valid.
 check_compData(simulation_data)
@@ -103,8 +118,9 @@ deseq2_results <- deseq2_results[order(deseq2_results$padj), ]
 head(deseq2_results, 10)
 
 # Save the complete DESeq2 results.
-write.csv(as.data.frame(deseq2_results),
-  "results/simulation/simulation_n7_repl1_DESeq2.csv")
+write.csv(
+  as.data.frame(deseq2_results),
+  paste0("results/simulation/", dataset_name, "_DESeq2.csv"))
 
 # --------------------------------
 # edgeR
@@ -130,8 +146,9 @@ edger_results <- topTags(edger_test, n = Inf)$table
 head(edger_results, 10)
 
 # Save the complete edgeR results.
-write.csv(edger_results,
-  "results/simulation/simulation_n7_repl1_edgeR.csv")
+write.csv(
+  edger_results,
+  paste0("results/simulation/", dataset_name, "_edgeR.csv"))
 
 # --------------------------------
 # limma-voom
@@ -149,15 +166,15 @@ limma_results <- topTable(
   limma_fit,
   coef = 2,
   number = Inf,
-  sort.by = "P"
-)
+  sort.by = "P")
 
 # Display the 10 highest-ranked genes.
 head(limma_results, 10)
 
 # Save the complete limma-voom results.
-write.csv(limma_results,
-          "results/simulation/simulation_n7_repl1_limma_voom.csv")
+write.csv(
+  limma_results,
+  paste0("results/simulation/", dataset_name, "_limma_voom.csv"))
 
 # --------------------------------
 # Calculate performance metrics
@@ -261,12 +278,13 @@ simulation_metrics <- rbind(
   edger_metrics,
   limma_metrics)
 
-# Display the comparison.
-simulation_metrics
+# Add this dataset's three method rows to the growing table.
+benchmark_metrics <- rbind(benchmark_metrics, simulation_metrics)
+}
 
-# Save the metrics table.
-write.csv(
-  simulation_metrics,
-  "results/simulation/simulation_n7_repl1_metrics.csv",
-  row.names = FALSE
-)
+# Display and save the combined metrics from both datasets.
+print(benchmark_metrics)
+
+write.csv(benchmark_metrics,
+  "results/simulation/simulation_benchmark_metrics.csv",
+  row.names = FALSE)
