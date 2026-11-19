@@ -1,8 +1,8 @@
-# Run a two-dataset development check for the accuracy benchmark.
-# For each dataset, this script simulates data and runs the three methods,
-# comparing their results with compcodeR's known DE genes.
-# The settings below use two datasets with 7 samples per group.
-# The full accuracy benchmark will use 20 datasets.
+# Run the full 20-dataset accuracy benchmark.
+# For each dataset, this script simulates data, runs all three methods,
+# and compares their results with compcodeR's known DE genes.
+# The benchmark includes 10 datasets with 7 samples per group and
+# 10 datasets with 15 samples per group.
 
 # Load compcodeR for simulation.
 library(compcodeR)
@@ -19,10 +19,11 @@ if (!dir.exists("data/simulation")) {
 if (!dir.exists("results/simulation")) {
   dir.create("results/simulation", recursive = TRUE)}
 
-# Settings for the two-dataset check.
+# Settings for the full 20-dataset accuracy benchmark.
 benchmark_settings <- data.frame(
-  samples_per_group = c(7, 7),
-  replicate = c(1, 2))
+  samples_per_group = c(rep(7, 10), rep(15, 10)),
+  replicate = rep(1:10, times = 2)
+)
 
 # Start an empty table to collect metrics from each dataset.
 benchmark_metrics <- data.frame()
