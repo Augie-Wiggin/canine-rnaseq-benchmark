@@ -1,10 +1,9 @@
 # Calculate performance metrics for the compcodeR pilot data.
 # The DE genes labeled by compcodeR are treated as the known truth.
 
-# Read the simulated compcodeR dataset.
-pilot_data <- readRDS("data/compcodeR_pilot_n7_repl1.rds")
+# Read the simulated dataset and the complete results from each method.
+pilot_data <- readRDS("data/compcodeR_pilot_dataset.rds")
 
-# Read the complete result table from each method.
 deseq2_results <- read.csv("results/pilot/deseq2_pilot_results.csv",
   row.names = 1,
   check.names = FALSE )
@@ -17,22 +16,14 @@ limma_results <- read.csv("results/pilot/limma_voom_pilot_results.csv",
   row.names = 1,
   check.names = FALSE )
 
-# Identify the genes that compcodeR labeled as truly DE.
-# pilot_data is a compData object.
-# The @ symbol opens a named slot in that object.
-# variable.annotations stores information about each gene.
-# The $ symbol selects the differential.expression column.
-# A value of 1 means DE, and a value of 0 means not DE.
-
+# In the compcodeR object, 1 labels a truly DE gene and 0 labels a non-DE gene.
 true_de <- pilot_data@variable.annotations$differential.expression == 1
 
-# Use the count-matrix row names to get the gene names.
+# Get the names of the genes labeled as truly DE.
 true_de_genes <- rownames(pilot_data@count.matrix)[true_de]
 
-# Display the number of known DE genes.
+# Check the number and names of the known DE genes.
 length(true_de_genes)
-
-# Display the first few known DE genes.
 head(true_de_genes)
 
 # NA means that an adjusted p-value was not available.
@@ -90,6 +81,9 @@ precision <- true_positive / (true_positive + false_positive)
 # Calculate recall.
 recall <- true_positive / (true_positive + false_negative)
 
+# Calculate specificity.
+specificity <- true_negative / (true_negative + false_positive)
+
 # Calculate the observed false discovery rate.
 observed_fdr <- false_positive / (true_positive + false_positive)
 
@@ -102,6 +96,7 @@ deseq2_metrics <- data.frame(
   true_negative = true_negative,
   precision = precision,
   recall = recall,
+  specificity = specificity,
   observed_fdr = observed_fdr )
 
 deseq2_metrics
@@ -138,6 +133,10 @@ edger_precision <- edger_true_positive /
 edger_recall <- edger_true_positive /
   (edger_true_positive + edger_false_negative)
 
+# Calculate specificity.
+edger_specificity <- edger_true_negative /
+  (edger_true_negative + edger_false_positive)
+
 # Calculate the observed false discovery rate.
 edger_observed_fdr <- edger_false_positive /
   (edger_true_positive + edger_false_positive)
@@ -151,6 +150,7 @@ edger_metrics <- data.frame(
   true_negative = edger_true_negative,
   precision = edger_precision,
   recall = edger_recall,
+  specificity = edger_specificity,
   observed_fdr = edger_observed_fdr
 )
 
@@ -188,6 +188,10 @@ limma_precision <- limma_true_positive /
 limma_recall <- limma_true_positive /
   (limma_true_positive + limma_false_negative)
 
+# Calculate specificity.
+limma_specificity <- limma_true_negative /
+  (limma_true_negative + limma_false_positive)
+
 # Calculate the observed false discovery rate.
 limma_observed_fdr <- limma_false_positive /
   (limma_true_positive + limma_false_positive)
@@ -201,6 +205,7 @@ limma_metrics <- data.frame(
   true_negative = limma_true_negative,
   precision = limma_precision,
   recall = limma_recall,
+  specificity = limma_specificity,
   observed_fdr = limma_observed_fdr
 )
 

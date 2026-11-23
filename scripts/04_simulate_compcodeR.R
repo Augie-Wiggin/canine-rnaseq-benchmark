@@ -1,7 +1,7 @@
 # This script creates one pilot RNA-seq dataset with compcodeR.
-# The simulation has known differentially expressed genes.
-# The setup follows the official compcodeR vignette with smaller
-# settings for this pilot test.
+# The simulated data include known differentially expressed genes.
+# The settings follow the compcodeR vignette's general approach,
+# with project-specific values for this initial test.
 
 # Load compcodeR.
 library(compcodeR)
@@ -19,8 +19,7 @@ pilot_data <- generateSyntheticData(
   filter.threshold.total = 1,
   filter.threshold.mediancpm = 0,
   fraction.non.overdispersed = 0,
-  output.file = "data/compcodeR_pilot_n7_repl1.rds"
-)
+  output.file = "data/compcodeR_pilot_dataset.rds")
 
 # A compData object stores different parts of the simulation
 # in separate slots. Show the names of those slots.
@@ -48,8 +47,3 @@ head(pilot_data@count.matrix)
 
 # Check whether the compData object is valid.
 check_compData(pilot_data)
-
-# Create a diagnostic report for the pilot simulation.
-summarizeSyntheticDataSet(
-  data.set = "data/compcodeR_pilot_n7_repl1.rds",
-  output.filename = "compcodeR_pilot_n7_datacheck.html")
